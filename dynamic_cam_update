@@ -1,0 +1,57 @@
+import cv2
+import time
+import sys
+import paramiko
+import os
+
+def find_available_cameras():
+    available_cameras = []
+    for camera_number in range(10):  # Check the first 10 camera numbers, you can adjust this number
+        cap = cv2.VideoCapture(camera_number)
+        if cap.isOpened():
+            available_cameras.append(camera_number)
+            cap.release()
+    return available_cameras
+
+def select_camera(available_cameras):
+    if not available_cameras:
+        print("No cameras available.")
+        return None
+
+    print("Available cameras:")
+    for i, camera_number in enumerate(available_cameras):
+        print(f"{i}: Camera {camera_number}")
+
+    while True:
+        try:
+            selected_camera_index = int(input("Enter the index of the camera you want to use: "))
+            if selected_camera_index in range(len(available_cameras)):
+                return available_cameras[selected_camera_index]
+            else:
+                print("Invalid camera index. Please enter a valid index.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+
+def capture_and_transfer_image(ip_address, username, password, camera_number):
+    cap = cv2.VideoCapture(camera_number)
+
+    if not cap.isOpened():
+        print(f"Error: Could not open camera {camera_number}.")
+        return
+
+    # Rest of your code for capturing and transferring the image
+
+if __name__ == "__main":
+    if len(sys.argv) != 3:
+        print("Usage: python capture_and_transfer.py <IP_ADDRESS> <USERNAME> <PASSWORD>")
+        sys.exit(1)
+
+    ip_address = sys.argv[1]
+    username = sys.argv[2]
+    password = sys.argv[3]
+
+    available_cameras = find_available_cameras()
+    camera_number = select_camera(available_cameras)
+
+    if camera_number is not None:
+        capture_and_transfer_image(ip_address, username, password, camera_number)
